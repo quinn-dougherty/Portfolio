@@ -93,6 +93,8 @@ correlates according to that matrix in the report as well.
 I hope that this tool can accerate EDA on my team and increase honesty and
 validation accuracy for our inference. 
 
+Further resource: [`fancyimpute`](https://pypi.org/project/fancyimpute/)
+
 ## highlight: yielding dataframes
 
 One of the methods in my Load class takes the main share of heavy lifting-- it
@@ -111,6 +113,8 @@ def df_iter_by_window(
 I haven't stress tested it on large input yet, but my hypothesis is that _lazily_
 building a collection of dataframes can be kinder on memory than ordinary list
 comprehension. 
+
+If you're unfamiliar with laziness in python or `yield`: [read Jeff Knupp's blog](https://jeffknupp.com/blog/2013/04/07/improve-your-python-yield-and-generators-explained/). Well, just in general read Jeff Knupp anyway. 
 
 ## highlight: `option_join` 
 In the missingness report, I wanted to use python `None` at an intermediary stage to
@@ -144,7 +148,5 @@ Since in the context of my program I'm passing this function after my
 a nonempty list _or_ a `None`, the only "falsey" value that could possibly
 appear after the `else:` is `None`.
 
-``` python
-
-```
-
+__resource if the above is in klingon_: [Graham Hutton's intro to programming with
+`Maybe`](https://youtu.be/t1e8gqXLbsU)
