@@ -1,0 +1,8 @@
+cleanbatch/04-24/
+.env
+*.csv
+__pycache__/
+.mypy_cache/
+!04-24-MISSINGLOG.csv 
+*.pickle
+!pruned_dict.pickle
