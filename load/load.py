@@ -25,8 +25,9 @@ class Load:
         self.to_drop: List[str] = to_drop
         self.to_keep: List[str] = to_keep
         self.target: List[str] = [to_target]
-        self.df: pd.DataFrame = pd.concat(self.df_iter_by_window(self.file_signatures))
-
+        self.df: pd.DataFrame = pd.concat(
+            self.df_iter_by_window(
+                self.file_signatures))
 
     def csv_path(self, code: str) -> str:
         ''' takes a signature xxx-yyy
@@ -46,7 +47,7 @@ class Load:
                 return float(x.replace(',', '')
                               .replace('$', '')
                               .replace(' ', ''))
-            except:
+            except BaseException:
                 return x
 
         try:
@@ -77,11 +78,11 @@ class Load:
     def export_csv(self, name: Optional[str] = None, to_subdir: bool = True):
         '''will automatically add '.csv' to filename
 
-        to_subdir argument puts it in eda-playground
+        to_subdir argument puts it in playground
         TODO: implement alternative subdir argument.
         '''
 
-        subdir: str = 'eda-playground'
+        subdir: str = 'playground'
         path: str = '.csv'
         if name is not None:
             path = name + path

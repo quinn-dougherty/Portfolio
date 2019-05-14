@@ -5,8 +5,9 @@ import sys
 from load import Load  # type: ignore
 import pandas as pd  # type: ignore
 from tqdm import tqdm  # type: ignore
-from numpy import divide as dv  # type: ignore
+from numpy import divide  # type: ignore
 from typing import List, Dict, Optional, Tuple
+
 
 class LogMissing:
     ''' log info about missingness: .
@@ -30,7 +31,23 @@ class LogMissing:
         pearson correlates are only calculated for features of zero nulls, right now.
         "'''
 
-        def strong_enough(corr_mat: pd.DataFrame, featu: List[str],
+        def option_join(strings: Optional[List[str]],
+                        withsep: str = ', ') -> Optional[str]:
+            ''' if input is None propagate None, else join with withsep. '''
+            if strings:
+                return withsep.join(strings)
+            else:
+                return strings
+
+        def option_plus_paren(strings: Optional[List[str]],
+                        withsep: str = ', ') -> Optional[str]:
+            ''' if input is None propagate None, else concatenate and paren '''
+            if strings:
+                return 'MAR(' + withsep.join(strings) + ')'
+            else:
+                return None
+
+        def strong_enough(corr_mat: pd.DataFrame, featu: str,
                           corr_strength: float = self.correlation_strength) -> Optional[List[str]]:
             ''' takes slice of a correlationmatrix and a strength parameter and returns a list of correlative features. '''
             xs = [k for k, v in (abs(corr_mat[featu]) >
@@ -44,38 +61,43 @@ class LogMissing:
             'missing_rate',
             'pearson_correlates',
             'missing_regime',
-            'impute_strat_recommendation']
+        ]
 
         observations: int = self.loader.df.shape[0]
 
-        missing_log: pd.DataFrame = pd.DataFrame(columns=cs, index=self.loader.df.columns)
+        missing_log: pd.DataFrame = pd.DataFrame(
+            columns=cs, index=self.loader.df.columns)
 
-        missingness: pd.DataFrame = self.loader.df.isna().astype(int).corr()
+        missingness_corr: pd.DataFrame = self.loader.df.isna().astype(int).corr()
 
         correlation_matrix: pd.DataFrame = self.loader.df.corr()
 
-        nan_correlates: Dict[str, Optional[List[str]]] = dict() # empty list represents no correlates
-        correlates: Dict[str, Optional[List[str]]] = dict() # empty list represents no correlates.
+        # None represents no correlates
+        nan_correlates: Dict[str, Optional[List[str]]] = dict()
+        # None represents no correlates.
+        correlates: Dict[str, Optional[List[str]]] = dict()
 
-        isnasum_rate: float = dv(self.loader.df.isna().sum(), self.loader.df.shape[0])
+        isnasum_rate: float = divide(
+            self.loader.df.isna().sum(),
+            self.loader.df.shape[0])
 
         for feature in tqdm(
-                self.loader.df.columns, desc="counting nans, correlations, MAR-correlates..."):
+                self.loader.df.columns,
+                desc="counting nans, correlations, MAR-correlates..."):
 
             missing_log.missing_rate[feature] = isnasum_rate[feature]
 
-            nan_correlates[feature] = strong_enough(missingness, feature)
+            nan_correlates[feature] = strong_enough(missingness_corr, feature)
 
             if feature in correlation_matrix.columns:
                 correlates[feature] = strong_enough(
                     correlation_matrix, feature)
                 if correlates[feature]:
-                    missing_log.pearson_correlates[feature] = ", ".join(
+                    missing_log.pearson_correlates[feature] = option_join(
                         correlates[feature])
 
             if nan_correlates[feature]:
-                missing_log.missing_regime[feature] = "MAR(" + ', '.join(
-                    nan_correlates[feature]) + ")"
+                missing_log.missing_regime[feature] = option_plus_paren(nan_correlates[feature])
 
         return missing_log
 
@@ -85,7 +107,7 @@ class LogMissing:
         to_subdir argument puts it in ../clean_dev, if False it puts it in .
         '''
 
-        subdir: str = "eda-playground"
+        subdir: str = "playground"
 
         def mk_path(name: Optional[str], to_subdir: bool) -> Tuple[str, str]:
             path: str = '.csv'

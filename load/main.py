@@ -15,11 +15,15 @@ def get_args() -> ArgumentParser:
     parser: ArgumentParser = ArgumentParser(
         description='Load a datadump of multiple uniform-column\'d .csvs, run a couple cleaning and filtering functions, and write and/or return a df. ')
 
-    parser.add_argument('--dumpdate', type=str, default=DUMP,
-                        help='the date of the dump you want to load in mm-dd format. ')
+    parser.add_argument('--dumpname', type=str, default=DUMP,
+                        help='the name dump you want to load. ')
 
-    parser.add_argument('--windows', nargs='+', type=str, default=FILE_SIGNATURES,
-                        help='list of windows you want to load in ddd-ddd format, where number of days is measured in ddd minus date of export (see mm-dd/README.md for more details)')
+    parser.add_argument(
+        '--windows',
+        nargs='+',
+        type=str,
+        default=FILE_SIGNATURES,
+        help='list of file signatures you want to load')
 
     parser.add_argument(
         '--filename',
@@ -32,13 +36,13 @@ def get_args() -> ArgumentParser:
         '--writecsv',
         type=bool,
         default=True,
-        help="would you like to write output csv? if not, set to False. ")
+        help="would you like to write output csv? if not, set to False. NOTE: currently not fully operational. ")
 
     parser.add_argument(
         '--logmissing',
         type=bool,
         default=True,
-        help="would you like to record info about missingness? if not ,set to False. ")
+        help="would you like to record info about missingness? if not, set to False. ")
 
     return parser
 
@@ -49,7 +53,7 @@ args = parser.parse_args()
 
 if __name__ == '__main__':
     try:
-        load: Load = Load(args.dumpdate, args.windows)
+        load: Load = Load(args.dumpname, args.windows)
 
         missing_log: LogMissing = LogMissing(load)
 

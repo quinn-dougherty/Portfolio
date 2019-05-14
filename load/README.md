@@ -1,58 +1,142 @@
-# usage: 
+# Data Loading Tool:
 
-Right now you have to manually download and unzip the dump from gdrive. 
+This is being used behind the scenes on the project [My
+House](https://myhouse-6htfddism.now.sh/) at Lambda School, a home valuation
+tool. 
 
-**also ensure that each filename in `04-24` dir is in `ddd-ddd` format!**
+Given a data dump in a number of csvs, iterate through them and apply cleaning
+operations before concatenating them and writing them as one new, large csv-- all from
+your terminal.
 
-The goal is that when we get larger dumps, we assume the schema of features is the same, and we can trivially put it back into our pipeline. 
+I wrote this tool so that even if the data dump updated twice a week through the
+life of the project, the exploratory data analysis (EDA) and inference process
+wouldn't have to be slowed down for my team to update on that data. 
 
 ```
-cd ds-scripts/load
-python main.py
-``` 
-
-```
-$> python main.py -h
-usage: main.py [-h] [--dumpdate DUMPDATE]
-                    [--windows WINDOWS [WINDOWS ...]] [--filename FILENAME]
-                    [--writecsv WRITECSV] [--logmissing LOGMISSING]
+13:05:20:load:$> python main.py -h
+usage: main.py [-h] [--dumpname DUMPNAME] [--windows WINDOWS [WINDOWS ...]]
+               [--filename FILENAME] [--writecsv WRITECSV]
+               [--logmissing LOGMISSING]
 
 Load a datadump of multiple uniform-column'd .csvs, run a couple cleaning and
 filtering functions, and write and/or return a df.
 
 optional arguments:
   -h, --help            show this help message and exit
-  --dumpdate DUMPDATE   the date of the dump you want to load in mm-dd format.
+  --dumpname DUMPNAME   the name dump you want to load.
   --windows WINDOWS [WINDOWS ...]
-                        list of windows you want to load in ddd-ddd format,
-                        where number of days is measured in ddd minus date of
-                        export (see mm-dd/README.md for more details)
+                        list of file signatures you want to load
   --filename FILENAME   name you would like for your output csv.
   --writecsv WRITECSV   would you like to write output csv? if not, set to
-                        False. (note, currently bugged)
+                        False. NOTE: currently not fully operational.
   --logmissing LOGMISSING
                         would you like to record info about missingness? if
-                        not ,set to False.
+                        not, set to False.
 ```
 
-**NOTE: defaults to values in `gvars.py` if you give it no arguments.** 
+Through preliminary EDA on raw data, build up a list of features you know you want
+to drop and place that list in `gvars.py`. You can do the same with columns you
+know you want to keep. 
 
-**note; I haven't gotten `--writecsv=False` to work for some reason.**
+The values in `gvars.py` are the defaults of the command line arguments, but
+they can be easily overridden as you see in the `usage`. 
+
+It is fully [pep484](https://www.python.org/dev/peps/pep-0484/) compliant. 
+
+## Bonus feature: missingness report
+
+Too often, we take imputation for granted. At level one, we apply imputation
+strategies _as if we're debugging_, i.e. we run `.fillna('mean')` because we just want it to let us train up for inference. At level two, we put a little more TLC into EDA and experimentation,
+ending up with _motivated_ imputation strategies, i.e. thinking critically about the
+interaction between imputation and other things in your pipeline, informed mostly by validation loss. 
+
+In [this talk from SciPy 2018 by Dillon Niederhut](https://youtu.be/2gkw2T5jAfo) I found a proposal for
+level three. The problem with level two is that you're
+still deleting the memory of having missing data in the first place, preventing
+the reporting of results from being fully transparent. Niederhut calls for data
+scientists to push publishing conventions in the direction of **reporting the
+missingness at which you found the data** as a minimal requirement to interpret
+results. 
+
+So I knew I wanted to log missingness right away, in hopes that it would help
+the team (myself included) make more informed decisions from the beginning, and
+suggest imputation strategies to attempt. Even if it doesn't result in
+information the consumer can use, it will help our team be more clever and more
+honest internallly. 
+
+The three regimes of missingness are MCAR, MAR, and MNAR: 
+- **MCAR: Missing Completely at Random**. Here, an imp is going around just
+  deleting things at roll of the dice, just to get on your nerves. As Niederhut
+  explains, there is a _very_ high burden of proof on believing that your data
+  is MCAR. 
+- **MAR: Missing at Random**. Here, you can show that any feature's missingness
+  is correlated with missingness elsewhere in the data. This is the only one that was
+  easy to script up, so it's the only regime I make hypotheses about
+  automatically. 
+- **MNAR: Missing Not at Random**. Here, information _within a feature** can
+  explain the missingness of that feature. Showing exactly what that explanation
+  is is quite a hard inference problem in itself even on a case by case basis,
+  so i definitely didn't script it up in general. 
+  
+**All** imputation introduces bias, including just dropping rows. If you have an
+_MCAR_ feature, filling with mean is a reasonable compromise (but the bargain is
+that if you believe your feature is MCAR, it's probably wishful thinking). You
+can show a feature is _MAR_ with respect to other features by a simple script
+involving the correlation matrix of `df.isna().astype(int)` (which is what I did), and something like
+`from fancyimpute import IterativeImputer` will be the most successful. If a
+feature is _MNAR_, dropping is better than filling with mean. 
+
+In all regimes, the **correlation matrix** not of the `.isna().astype(int)`
+matrix but of the data itself can be a useful too, so I added a list of
+correlates according to that matrix in the report as well. 
+
+I hope that this tool can accerate EDA on my team and increase honesty and
+validation accuracy for our inference. 
+
+## highlight: yielding dataframes
+
+``` python
+def df_iter_by_window(
+        self, windows: List[str] = FILE_SIGNATURES) -> Iterator[pd.DataFrame]:
+    ''' makes a dataframe from each file in data dump returns iterator'''
+    for window in tqdm(windows, desc="cleaning & concatting..."):
+        yield self.clean_(pd.read_csv(self.csv_path(window), low_memory=False))
+```
 
 
-## The next step would be automatically pulling it down from gdrive (or perhaps better an s3 bucket), but we can build on this for that.
+## highlight: `option_join` 
+In the missingness report, I wanted to use python `None` at an intermediary stage to
+represent "no correlations are strong enough", meaning that my function
+`strong_enough` that takes a correlation matrix, a feature, and a strength
+parameter to return a list of features that are strongly-enough correlated needs
+to return `Optional[List[str]]`. A type **Optional[A]** passes a value that is
+_either_ an `A` _or_ a `None`. 
 
+When I ran `mypy`, I got a stern warning.
 
-### a program taking raw datadump and producing a more useful csv
+```
+ Argument 1 to "join" of "str" has incompatible type "Optional[List[str]]"; expected "Iterable[str]"
+```
 
-- it also writes a missingness csv, to log information abbout missingness. A stretch goal is for this to infer the correct imputation strategy, but in it's current form it can recommend strategies to you indirectly. 
+Where `List` is a subtype of `Iterable`. What I need is for `', '.join(None)`.
+to **propagate `None`** instead of `TypeError`.
 
-- basic glossary about missingness is: 
-- - `MAR` is "missing at random", this is the main target, it has to do with _correlation to other features_. This is where you can look at _other_ features to predict missingness of _this_ feature. I've _already_ written code to automagically infer this, to an extent.  
-- - MCAR is "missing completely at random", this is where a demon is removing rows by flipping a truly random coin. (this is the only situation where it's _remotely_ permissible to fillna(df.feat.mean()), and most of the time when you think you have MCAR it's wishful thinking. inevitably, we're going to fall back on this when we don't have other options. I _very likely will not_ be able to write good inference to automage this.  
-- - MNAR is "missing not at random", where you can predict the pattern of when a feature is missing _by looking directly at the feature_. I believe I will **not** be able to infer this _in general_, it needs human EDA or domain expertise, feature-by-feature.  
+``` python
+def option_join(strings: Optional[List[str]],
+                withsep: str = ', ') -> Optional[str]:
+    ''' if input is None propagate None, else join with withsep. '''
+    if strings:
+        return withsep.join(strings)
+    else:
+        return strings
+```
 
-so if you look at the `MISSINGLOG` csv, the rows `feat` that have `MAR(feat1, feat2, ...)` are saying "we believe that `feat1`, `feat2`, `...` are missing for the same reasons `feat` are missing. "
+Since in the context of my program I'm passing this function after my
+`strong_enough` function which is guaranteed by the semantics to return _either_
+a nonempty list _or_ a `None`, the only "falsey" value that could possibly
+appear after the `else:` is `None`.
 
+``` python
 
+```
 
