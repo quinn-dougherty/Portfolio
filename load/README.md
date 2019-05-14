@@ -48,12 +48,13 @@ It is fully [pep484](https://www.python.org/dev/peps/pep-0484/) compliant.
 Too often, we take imputation for granted. At level one, we apply imputation
 strategies _as if we're debugging_, i.e. we run `.fillna('mean')` because we just want it to let us train up for inference. At level two, we put a little more TLC into EDA and experimentation,
 ending up with _motivated_ imputation strategies, i.e. thinking critically about the
-interaction between imputation and other things in your pipeline, informed mostly by validation loss. 
+interaction between imputation and other things in our pipeline, informed mostly by validation loss. 
 
 In [this talk from SciPy 2018 by Dillon Niederhut](https://youtu.be/2gkw2T5jAfo) I found a proposal for
-level three. The problem with level two is that you're
-still deleting the memory of having missing data in the first place, preventing
-the reporting of results from being fully transparent. Niederhut calls for data
+level three. The problem with level two is that we are 
+erasing information with imputation-- namely, the distribution of missing vs.
+nonmissing values. Without recalling that distribution, the reporting of results
+can't be fully transparent. Niederhut calls for data
 scientists to push publishing conventions in the direction of **reporting the
 missingness at which you found the data** as a minimal requirement to interpret
 results. 
@@ -92,7 +93,7 @@ In all regimes, the **correlation matrix** not of the `.isna().astype(int)`
 matrix but of the data itself can be a useful too, so I added a list of
 correlates according to that matrix in the report as well. 
 
-I hope that this tool can accerate EDA on my team and increase honesty and
+I hope that this tool can accelerate EDA on my team and increase honesty and
 validation accuracy for our inference. 
 
 Further resource: [`fancyimpute`](https://pypi.org/project/fancyimpute/)
@@ -151,4 +152,5 @@ a nonempty list _or_ a `None`, the only "falsey" value that could possibly
 appear after the `else:` is `None`.
 
 _resource if the above is in klingon_: [Graham Hutton's intro to programming with
-`Maybe`](https://youtu.be/t1e8gqXLbsU)
+`Maybe`](https://youtu.be/t1e8gqXLbsU) (python `None` behaves a lot like haskell
+`Nothing`)
