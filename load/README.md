@@ -95,14 +95,22 @@ validation accuracy for our inference.
 
 ## highlight: yielding dataframes
 
+One of the methods in my Load class takes the main share of heavy lifting-- it
+makes the collection of dataframes that is to be consumed by `pd.concat`. If the
+dumps get particularly large, this is the section of the program that will
+stress a local machine. 
+
 ``` python
 def df_iter_by_window(
-        self, windows: List[str] = FILE_SIGNATURES) -> Iterator[pd.DataFrame]:
+        self, windows: List[str]) -> Iterator[pd.DataFrame]:
     ''' makes a dataframe from each file in data dump returns iterator'''
     for window in tqdm(windows, desc="cleaning & concatting..."):
         yield self.clean_(pd.read_csv(self.csv_path(window), low_memory=False))
 ```
 
+I haven't stress tested it on large input yet, but my hypothesis is that _lazily_
+building a collection of dataframes can be kinder on memory than ordinary list
+comprehension. 
 
 ## highlight: `option_join` 
 In the missingness report, I wanted to use python `None` at an intermediary stage to
