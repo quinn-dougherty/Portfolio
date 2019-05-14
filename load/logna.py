@@ -37,7 +37,7 @@ class LogMissing:
             if strings:
                 return withsep.join(strings)
             else:
-                return strings
+                return None
 
         def option_plus_paren(strings: Optional[List[str]],
                         withsep: str = ', ') -> Optional[str]:

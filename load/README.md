@@ -62,7 +62,9 @@ So I knew I wanted to log missingness right away, in hopes that it would help
 the team (myself included) make more informed decisions from the beginning, and
 suggest imputation strategies to attempt. Even if it doesn't result in
 information the consumer can use, it will help our team be more clever and more
-honest internallly. 
+honest internallly. The best way to do this is to have an auxiliary dataframe at
+your fingertips to consult when you're iterating on a model or exploring feature
+importances, coefficient sizes, etc.  
 
 The three regimes of missingness are MCAR, MAR, and MNAR: 
 - **MCAR: Missing Completely at Random**. Here, an imp is going around just
@@ -148,5 +150,5 @@ Since in the context of my program I'm passing this function after my
 a nonempty list _or_ a `None`, the only "falsey" value that could possibly
 appear after the `else:` is `None`.
 
-__resource if the above is in klingon_: [Graham Hutton's intro to programming with
+_resource if the above is in klingon_: [Graham Hutton's intro to programming with
 `Maybe`](https://youtu.be/t1e8gqXLbsU)
