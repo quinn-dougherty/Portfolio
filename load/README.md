@@ -1,7 +1,7 @@
 # Data Loading Tool:
 
 This is being used behind the scenes on the project [My
-House](https://myhouse-6htfddism.now.sh/) at Lambda School, a home valuation
+House](https://myhouse-pbi0bgqdc.now.sh/) at Lambda School, a home valuation
 tool. 
 
 Given a data dump in a number of csvs, iterate through them and apply cleaning
@@ -97,6 +97,8 @@ I hope that this tool can accelerate EDA on my team and increase honesty and
 validation accuracy for our inference. 
 
 Further resource: [`fancyimpute`](https://pypi.org/project/fancyimpute/)
+
+And [a gentler introduction to the problem from scipy 2016](https://youtu.be/cHzahWjaA7o).
 
 ## highlight: yielding dataframes
 
