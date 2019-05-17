@@ -25,15 +25,12 @@ from sklearn.ensemble.base import BaseEnsemble, _partition_estimators# type: ign
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 with open('estimators_tup.pickle', "rb") as p:
-    estimators = pickle.load(p)
+    seq_tfidf, lig_tfidf, bc = pickle.load(p)
 
 with open('dfs.pickle', "rb") as d:
-    dfs = pickle.load(d)
+    ligs, seqs, binds = pickle.load(d)
 
-seq_tfidf, lig_tfidf, bc = estimators
-ligs, seqs, binds = dfs
-
-def predict(ligid, seqid): 
+def predict(ligid: str, seqid: str) -> float:
     one = seqid in binds[binds.lig==ligid].seq.values and ligid in binds[binds.seq==seqid].lig.values
     if one: 
         return 1

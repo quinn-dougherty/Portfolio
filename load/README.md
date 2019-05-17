@@ -96,7 +96,9 @@ correlates according to that matrix in the report as well.
 I hope that this tool can accelerate EDA on my team and increase honesty and
 validation accuracy for our inference. 
 
-Further resource: [`fancyimpute`](https://pypi.org/project/fancyimpute/)
+Further resource: 
+- [`fancyimpute`](https://pypi.org/project/fancyimpute/)
+- [Another excellent SciPy conference talk](https://youtu.be/cHzahWjaA7o)
 
 And [a gentler introduction to the problem from scipy 2016](https://youtu.be/cHzahWjaA7o).
 
@@ -154,5 +156,5 @@ a nonempty list _or_ a `None`, the only "falsey" value that could possibly
 appear after the `else:` is `None`.
 
 _resource if the above is in klingon_: [Graham Hutton's intro to programming with
-`Maybe`](https://youtu.be/t1e8gqXLbsU) (python `None` behaves a lot like haskell
-`Nothing`)
+`Maybe`](https://youtu.be/t1e8gqXLbsU) (Python `None` behaves a lot like haskell
+`Nothing`, for particular ways of writing Python). 
