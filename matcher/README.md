@@ -39,10 +39,11 @@ signatures or `pep484`, and advanced usage of `None`.
 Explains how to interpret this as an optimization problem. 
 - [Solution: Optimization and Search?](#Solution:-Optimization-and-Search?): Some sketches and discussion
 of search methods. 
-- [Solution: The Roth-Peranson Resident Matching Algorithm?](#Solution:-For-Medical-School?): A
+- [Solution: The Roth-Peranson Resident Matching Algorithm?](#Solution: For
+Medical School?): A
 problem similar to this is assigning med students to med schools, and an
 excellent solution is known. Will it work for us? 
-- [My Solution, with caveats](#My-Solution,-with-caveats): 
+- [My Solution, with caveats](#My-Solution, with caveats): 
 
 # Model
 
@@ -223,7 +224,7 @@ though it would have been good practice for me to implement them.
 And a note, gradient descent doesn't fit our criteria for an **awesome** solver,
 even though it'd be quite good. 
 
-# For Medical School?
+# For Medical School? <a name="#Solution: For Medical School?"></a> 
 
 We're stepping back to the real world. Math is fun but it's not _practical_.
 Sometimes you just need to *get it done*. 
