@@ -131,6 +131,8 @@ def mean_satisfaction(people: List[Person]) -> float:
                        len(people))
 ```
 
+If you're just here for the Python, it's time to [skip to the end](#finale)
+
 # Interpretation: Utility Maximization <a name="utility"></a>
 
 Now that we have a _number_ we can interpret the quest for the best assignment
@@ -212,7 +214,7 @@ No.
 The number of possible assignments is [`NUM_PROJECTS ** NUM_PEOPLE -
 sum([binom(NUM_PROJECTS, k) * (NUM_PROJECTS-k)**NUM_PEOPLE for k in range(1,
 NUM_PROJECTS)])`](https://mathoverflow.net/questions/29490/how-many-surjections-are-there-from-a-set-of-size-n).
-At `150` people and `25` projects, it's number with `206` decimal places according to
+At `150` people and `25` projects, it's number with `209` decimal places according to
 Python. I'm assuming I can't run that. 
 
 Many search techniques are way better than exhaustive, but don't guarantee
@@ -252,4 +254,148 @@ are each given the empty rank ordering.
 So, adapting the *exact* med school algorithm doesn't work. 
 
 # My Solution <a name="finale"></a>
+
+I don't have a lot of experience with this sort of thing, but after some
+exploration I have decided that **my solution will not be awesome**. 
+
+That's when it hit me. _Weaken_ the convergence guarantees, _let in_ a little
+nondeterminism, and then, of course, you know, you just 
+
+``` python
+for k in range(PREF_MAX):
+    assign_to_nth(PEOPLE, k)
+```
+
+Assuming you know how to go through a list and just assign people to their `nth` preference.
+
+``` python
+def assign_to_nth(people: List[Person], n: int):
+    ''' Assign a person to their nth preference.
+    '''
+    for pers in get_unassigned(people):
+        if not pers.assigned:
+            nth = pers.preferences[n]
+            nth.add_person(pers)
+```
+
+Assuming you wrote the helper function `get_unassigned`
+
+``` python
+def get_unassigned(people: List[Person]) -> List[Person]:
+    ''' Take a list of people and return the sublist of those who are not
+    assigned yet. '''
+    return [pers for pers in people if not pers.assigned]
+```
+
+This will certainly do _something_, I wonder how many people it leaves high and
+dry? 
+
+Here is the complete initialization procedure for the following outcome: 
+- `NUM_PEOPLE = 150`
+- `NUM_PROJECTS = 25`
+- `TEAM_SIZE = NUM_PEOPLE//NUM_PROJECTS` Note, this is actually more stringent
+  than the real life use case, in which this number is a variable and the sum of
+  all the team sizes is slightly hgiher than `NUM_PEOPLE//NUM_PROJECTS`.
+- `LEN_PREFS = 5` This algorithm supports rank orderings of arbitrary length.
+  Here, we'll fix to a constant. 
+  
+Adding a report to show us how many people are left unmatched after each pass
+through the `for` loop, we get this: 
+
+``` python-console
+150 are still unassigned..
+10 are still unassigned..
+4 are still unassigned..
+2 are still unassigned..
+0 are still unassigned..
+Match finished. 0 are currently unmatched. 
+```
+
+The mean satisfaction of this match is `~0.9`. That's roughly consistent with
+the observation that `150 - 10 - 4 - 2` people made it into their first choice, but I
+won't show the weighted sum here. 
+
+This run converged. It looks like the probability of convergence is, holding
+`NUM_PEOPLE` and `NUM_PROJECTS` constant, a function of `TEAM_SIZE` and
+`LEN_PREFS`. If the rank order lists were each length 3, two people would have
+been left high and dry (completely unassigned). 
+
+While the outcome is depenedent on randomness-- the order in which the list of
+people is consumed -- only 16 people are even effected by that, since only 16
+people didn't get into their first choice. 
+
+I'm sure when it's implemented for the next round of capstone projects at Lambda
+next week it won't run _quite_ this smooth, because there are other
+considerations that need to be considered and implemented. But for a decidedly
+not **awesome** solution, this is pretty grand. 
+
+One more thing we should test out is if one or two projects are unusually
+popular. 
+
+We can model this by generating the toydata's preferences with a
+[poisson](https://en.wikipedia.org/wiki/Poisson_distribution) random variable
+from `scipy.special`.  
+
+``` python
+# in the Person class, 
+...
+     self.preferences_poisson: List[Project] = [PROJECTS[clip(poisson.rvs(mu=9), 
+                                                              0, 
+                                                              NUM_PROJECTS-1)] 
+                                               for _ 
+                                               in range(LEN_PREFS)]
+...
+```
+
+This will mean that the project that happens to lie in the neighborhood of the index, and
+it's neighbors, will be too popular and will have to reject people more often. 
+
+Let's see what happens when we run this. 
+
+``` python-console
+150 are still unassigned..
+17 are still unassigned..
+7 are still unassigned..
+2 are still unassigned..
+2 are still unassigned..
+Match finished. 2 are currently unmatched. 
+
+In the following, the tuple (project, int) represents a project annotated by how many times someone was rejected from it. 
+The projects ('C', 11), ('I', 4), ('Y', 4), ('W', 3), ('F', 2), ('Q', 2), ('V', 2), ('K', 1), ('P', 1) are very popular. 
+
+In the following, the tuple (project, int) represents a project annotated by how many people are in it. 
+The projects ('J', 2), ('O', 3), ('T', 3), ('B', 5) are rather unpopular
+
+The mean satisfaction of this match is 0.8906666666666666. 
+```
+
+In a measure of a project's _surplus popularity_, `self.popularity += 1` every time
+the `Project.add_person` method rejects someone, I found that 11 people who
+wanted project C most couldn't fit into it. That's a lot-- more than enough to
+justify duplicating the project, (by the same token, we can measure if groups
+end up too small-- at around two people, and those would be candidates to be
+dropped). Every time the program runs, management can make decisions like those,
+adjust the initial conditions to implement them, and run it again. This process
+can be iterated until the convergence is as close as desired.  
+
+This is all set to run on toy data by command line, on any machine with a
+basic scientific python build. 
+
+```
+usage: main.py [-h] [--popularity-threshold POPULARITY_THRESHOLD]
+               [--unpopularity-threshold UNPOPULARITY_THRESHOLD]
+               [--poisson POISSON]
+
+Solve the match with random preferences
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --popularity-threshold POPULARITY_THRESHOLD
+                        how popular does a project have to be to be considered
+                        for duplication?
+  --unpopularity-threshold UNPOPULARITY_THRESHOLD
+                        how many unpopular projects to print?
+  --poisson POISSON     Use a poisson process to simulate unusually popular
+                        projects?
+```
 

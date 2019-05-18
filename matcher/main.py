@@ -49,8 +49,13 @@ def solve(people: List[Person] = PEOPLE,
 
     print("In the following, the tuple (project, int) represents a project annotated by how many people are in it. ")
     print(f"The projects {unpopularity_report} are rather unpopular")
+
+    print()
+    tot_sat = mean_satisfaction(PEOPLE)
+    print(f"The mean satisfaction of this match is {tot_sat}. ")
     pass
 
 
 if __name__=='__main__':
+    from matcher import *
     solve(PEOPLE, poisson=args.poisson)

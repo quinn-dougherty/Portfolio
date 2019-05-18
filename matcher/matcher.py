@@ -10,8 +10,8 @@ from scipy.stats import poisson
 # global vars
 NUM_PEOPLE: int = 150
 NUM_PROJECTS: int = 25
-LEN_PREFS: int = 3
-PEOPLE_PER_PROJECT: int = NUM_PEOPLE//NUM_PROJECTS
+LEN_PREFS: int = 5
+PEOPLE_PER_PROJECT: int = NUM_PEOPLE//NUM_PROJECTS + 0
 ALPHABET: str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 # two wrapper classes
