@@ -109,7 +109,7 @@ To **normalize** satisfaction across all people, if they don't share a fixed
 length of preferences, we have to divide it by the largest one
 
 ``` python
-PREF_MAX = max([len(person.preferences) for person in PEOPLE])
+PREF_MAX: int = max([len(person.preferences) for person in PEOPLE])
 
 def satisfaction(assigned_to: Project, 
                  preferences: List[Project], 
@@ -147,7 +147,24 @@ people to projects, but it would be **awesome** to have a solution that spits
 out a provable global maximum rather than a local one or a "seems legit"
 solution that is at least better than any known alternatives. 
 
+Solutions to optimization problems have **convergence guarantees** and
+**randomness independence** in either strong or weak amounts. So a solver that
+only even works 5% of the time and is very nondeterministic would have weak
+convergence guarantees and weak randomness independence, and an algorithm that
+almost always converges and is almost the same every time has strong convergence
+guarantees and strong randomness independence. 
+
+In addition to a proof that the output is globally optimal, an **awesome**
+solution should have strong convergence guarantees and enough determinism that
+everyone agrees the outcome is fair. 
+
+Does an **awesome** solution exist? 
+
 # Combinatorics? 
+
+If an **awesome** solution exists, one of the first steps you can take toward
+finding it is understanding the function space. Sometimes, the _size_ of a
+function space shows you important information about it. 
 
 One of the most straightforward ways to optimize something is to understand it's
 **derivative**. A **derivative** is a measure of *change* of output upon a
@@ -159,13 +176,12 @@ direction where change is greatest, as measured by derivatives.
 
 Could we format a derivative here? No. I don't know enough math. But I'd like to
 take you on the journey toward realizing this, because it illustrates what the
-complexity of an exact solution might be (a provably global maximum)
+complexity of an exact, **awesome** solution might be.
 
 Let's think of our function as the type `Assignment -> float`, for some
 assignment type. Our problem comes with the constraint that every project is
 assigned to only one team, so an assignment could be a map `Projects ->
-List[Person]`, which in Python's notation is simply `Dict[Projects,
-List[Person]]`. If we think of project teams as subsets of people, and we
+List[Person]`, which in Python's notation is simply `Dict[Projects, List[Person]]`. If we think of project teams as subsets of people, and we
 notice that project teams are non-overlapping, then we can think of this
 codomain as a collection of subsets. While assignments are bijective, we can
 interchange domain for codomain and remove the subset-ing of `Person`, making
@@ -186,7 +202,7 @@ wiggling, I don't know exactly how to take a derivative. I know how to [hack
 together something like gradient descent on `Nat`](https://en.wikipedia.org/wiki/Finite_difference#difference_operator), which doesn't have
 infinitessimal wiggling either, but I don't know how to do it on permutation
 groups. Gradient descent on permutation groups seems like the kind of thing you
-read about on the John Baez cluster of twitter, whatever it is it's probably got
+read about on the [John Baez](https://twitter.com/johncarlosbaez) cluster of twitter, whatever it is it's probably got
 a big "don't try this at home" label on it. 
 
 # Raw Search Power? 
@@ -203,6 +219,9 @@ Many search techniques are way better than exhaustive, but don't guarantee
 convergence, and offer no way of knowing whether is a local optima or the global
 one. I decided they wouldn't be satisfying enough to be worth the trouble, even
 though it would have been good practice for me to implement them. 
+
+And a note, gradient descent doesn't fit our criteria for an **awesome** solver,
+even though it'd be quite good. 
 
 # For Medical School?
 
