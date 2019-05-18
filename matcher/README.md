@@ -2,23 +2,23 @@
 
 The problem is **assignment*. In particular, match 150 people into 25 projects. 
 
-### Context: capstone projects at Lambda School
+### Context: Capstone Projects at Lambda School
 
-So, suppose two Lambda School students are Alice and Bob, and suppose that two
+Suppose two Lambda School students are Alice and Bob, and suppose that two
 Lambda School projects are Pizza and Veggie Burgers. But in the following code
 we have random toy data, where people are named `aa` and projects are named `A`,
 where a is any lower case letter and A is any upper case letter.  
 
-### My solution
+### My Solution
 
 I spent a lot of time approaching this from a lot of angles, and found a
 solution that, in hindsight, is very simple. With some caveats, it can be
-guaranteed to converge, and randomness only even impacts `<10%` of people.  
+guaranteed to converge, and in the worst case randomness only impacts `<10%` of people.  
 
 ### Assumptions
 
 Because we're interested in a group's satisfaction and effectiveness at a
-project, no model or algorithm could capture all considerations, but a basic
+project, no model or algorithm will capture all considerations, but a basic
 **rank ordering** surveyed from each participant will be the level of
 information we have about their preferences. 
 
@@ -32,10 +32,10 @@ We will also, for this prototype, assume **every project has the same size
 team** and assume **every person is surveyed for the same amount of preference
 information**. 
 
-## This post
+## This Post
 
 I wanted to talk about my process and document the rabbit holes I went down
-before presenting a pretty-good solution. 
+before presencting a pretty-good solution. 
 
 Please skip only to the parts you're interested in, or read all the way through!
 
@@ -294,7 +294,23 @@ def get_unassigned(people: List[Person]) -> List[Person]:
     return [pers for pers in people if not pers.assigned]
 ```
 
-This will certainly do _something_, I wonder how many people it leaves high and
+And, finally, assuming you added the `add_person` method to the `Project` class. The `add_person`
+method is the most crucial part, because it leaves the value `person.assigned` at
+`None` if that particular project is already full
+
+``` python
+    # in Project class
+    ... 
+    def add_person(self, name: Person):
+        if len(self.team) <= self.max_team_size:
+            self.team.append(name)
+            name.assigned = self
+        else:
+            self.popular += 1
+    ...
+```
+
+This algorithm will certainly do _something_, I wonder how many people it leaves high and
 dry? 
 
 Here is the complete initialization procedure for the following outcome: 
@@ -369,11 +385,9 @@ Let's see what happens when we run this.
 2 are still unassigned..
 Match finished. 2 are currently unmatched. 
 
-In the following, the tuple (project, int) represents a project annotated by how many times someone was rejected from it. 
-The projects ('C', 11), ('I', 4), ('Y', 4), ('W', 3), ('F', 2), ('Q', 2), ('V', 2), ('K', 1), ('P', 1) are very popular. 
+Surplus popularity of project C: 11
 
-In the following, the tuple (project, int) represents a project annotated by how many people are in it. 
-The projects ('J', 2), ('O', 3), ('T', 3), ('B', 5) are rather unpopular
+Understaffed: Project J at 2 team members.
 
 The mean satisfaction of this match is 0.8906666666666666. 
 ```
@@ -381,8 +395,8 @@ The mean satisfaction of this match is 0.8906666666666666.
 _Even in this case_ it performs quite well, because the length of the survey is
 long _relative** to the max team size.
 
-**Remember: The shorter the survey, the weaker the results!**. 
-
+**Remember: The shorter the survey, the weaker the results!**.
+ 
 In a measure of a project's _surplus popularity_, `self.popularity += 1` every time
 the `Project.add_person` method rejects someone, I found that 11 people who
 wanted project C most couldn't fit into it. That's a lot-- more than enough to
