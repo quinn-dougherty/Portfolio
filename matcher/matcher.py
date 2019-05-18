@@ -99,7 +99,7 @@ def satisfaction_(assigned_to: Optional[Project], preferences: List[Project]) ->
         # gain zero satisfaction by getting assigned to a project you didn't list
         return 0
 
-def satisfaction(assigned_to: Project,
+def satisfaction(assigned_to: Optional[Project],
                  preferences: List[Project],
                  pref_max: int = PREF_MAX) -> float:
     '''returns normalized satisfaction'''
@@ -124,13 +124,13 @@ def unassigned_num(people: List[Person]) -> int:
     ''' get the number of unassigned people. '''
     return len(get_unassigned(people))
 
-def popular(projects: List[Project], threshold: int = 0) -> List[Project]:
+def popular(projects: List[Project], threshold: int = 0) -> List[Tuple[Project, int]]:
     ''' sort projects by the popularity incrementer '''
     return sorted([(project, project.popular) for project in projects if project.popular > 0],
                    reverse=True,
                    key = lambda project_tup: project_tup[0].popular)
 
-def unpopular(projects: List[Project], threshold: int = 3) -> List[Project]:
+def unpopular(projects: List[Project], threshold: int = 3) -> List[Tuple[Project, int]]:
     ''' show projects with the lowest amount of people '''
     return sorted([(project, len(project.team)) for project in projects],
                    reverse=False,
