@@ -1,6 +1,6 @@
 # The problem: 
 
-The problem is **assignment*. In particular, match 150 people into 25 projects. 
+The problem is *assignment*. In particular, match 150 people into 25 projects. 
 
 ### Context: Capstone Projects at Lambda School
 
@@ -13,7 +13,9 @@ where a is any lower case letter and A is any upper case letter.
 
 I spent a lot of time approaching this from a lot of angles, and found a
 solution that, in hindsight, is very simple. With some caveats, it can be
-guaranteed to converge, and in the worst case randomness only impacts `<10%` of people.  
+guaranteed to converge, and in the worst case randomness only impacts `<10%` of
+people.
+You can [read the code here on GitHub!](https://github.com/quinn-dougherty/Portfolio/blob/master/matcher/matcher.py)
 
 ### Assumptions
 
@@ -393,7 +395,7 @@ The mean satisfaction of this match is 0.8906666666666666.
 ```
 
 _Even in this case_ it performs quite well, because the length of the survey is
-long _relative** to the max team size.
+long **relative** to the max team size.
 
 **Remember: The shorter the survey, the weaker the results!**.
  
