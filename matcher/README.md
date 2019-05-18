@@ -22,8 +22,8 @@ information we have about their preferences.
 This means we're ignoring conditionals like "If Bob is on Pizza then Alice
 prefers Pizza, else Alice prefers Veggie Burgers", and in general suppressing
 anything more detailed than **rank ordering**, so Bob's rank ordering might look
-like `Veggie Burgers >> Pizza >> Third Project` where `>>` is (a kind of "greater
-than" symbol)[https://en.wikipedia.org/wiki/Preference_%28economics%29#Notation].
+like `Veggie Burgers >> Pizza >> Third Project` where `>>` is [a kind of "greater
+than" symbol](https://en.wikipedia.org/wiki/Preference_%28economics%29#Notation).
 
 ## This post
 
@@ -32,17 +32,17 @@ a meta-comment about not being sniped by the *wrong* rabbit holes.
 
 Please skip only to the parts you're interested in, or read all the way through!
 
-[Basic Model](#Model): Assumes some basic Python, literacy in type
+- [Basic Model](#Model): Assumes some basic Python, literacy in type
 signatures or `pep484`, and advanced usage of `None`.
-[Interpretation: Utility Maximization](#Interpretation: Utility Maximization):
-[Combinatorics?](#Combinatorics?): Very formal, assumes literacy in discrete mathematics.
+- [Interpretation: Utility Maximization](#Interpretation:-Utility-Maximization):
+- [Combinatorics?](#Combinatorics?): Very formal, assumes literacy in discrete mathematics.
 Explains how to interpret this as an optimization problem. 
-[Solution: Optimization and Search?](#Solution: Optimization and Search?): Some sketches and discussion
+- [Solution: Optimization and Search?](#Solution:-Optimization-and-Search?): Some sketches and discussion
 of search methods. 
-[Solution: The Roth-Peranson Resident Matching Algorithm?](#Solution: For Medical School?): A
+- [Solution: The Roth-Peranson Resident Matching Algorithm?](#Solution:-For-Medical-School?): A
 problem similar to this is assigning med students to med schools, and an
 excellent solution is known. Will it work for us? 
-[My Solution, with caveats](#My Solution, with caveats): 
+- [My Solution, with caveats](#My-Solution,-with-caveats): 
 
 # Model
 
@@ -212,7 +212,7 @@ No.
 The number of possible assignments is [`NUM_PROJECTS ** NUM_PEOPLE -
 sum([binom(NUM_PROJECTS, k) * (NUM_PROJECTS-k)**NUM_PEOPLE for k in range(1,
 NUM_PROJECTS)])`](https://mathoverflow.net/questions/29490/how-many-surjections-are-there-from-a-set-of-size-n).
-At 150 people and 25 projects, it's number with 206 decimal places according to
+At `150` people and `25` projects, it's number with `206` decimal places according to
 Python. I'm assuming I can't run that. 
 
 Many search techniques are way better than exhaustive, but don't guarantee
@@ -225,36 +225,31 @@ even though it'd be quite good.
 
 # For Medical School?
 
+We're stepping back to the real world. Math is fun but it's not _practical_.
+Sometimes you just need to *get it done*. 
 
+It had turned out that med schools were dealing with a similar problem.
+Applicants to residence programs would report rank ordered lists of schools, and
+schools would report rank ordered lists of applicants. But it wasn't understood
+until recently, when Nobel-winning work on _stable allocation_ was adapted into
+a solution that's now in use in several countries' residency programs. This
+[splainer from Canada](https://www.carms.ca/the-match/how-it-works/) provides a nice
+pseudocode of the process. 
+
+It looks like the ability for schools to, in turn, prefer applicants divides out
+some complexity for them and strengthens it's convergence guarantee and
+determinism. We don't have that, our projects can't prefer people. 
+
+I found a [Python implementation nicely set up on github by John Dirk
+Morrison](https://github.com/J-DM/Roth-Peranson), and briefly adapted it to our
+use case. 
+
+If you'd like, spend some time trying to predict what will happen if "projects"
+are each given the empty rank ordering.
+
+>! Nothing. All people return unassigned. 
+
+So, adapting the *exact* med school algorithm doesn't work. 
 
 # My Solution
-
-
-# assign `N` things into `K` bins, presumably each bin can support `N/K` things. 
-
-Survey each thing for the bin it'd prefer, limited to rank ordering. 
-Interpret _utility_ of being assigned to a bin as the index of that bin appearing in the reversed preference list of each thing. 
-
-# optimization problem-- find the assignment that maximizes `self.total_utility()`. 
-
-I'm 98% it's exponential in num projects, a rough upper bound is ~$\binom{n}{n//k} ^{k}$ where n is number of people and k is number of projects (and, i.e. python, n//k is floor divide). I *don't* expect brute force `argmax` to be viable. 
-
-# solutions proposed
-Something like [simulated annealing](https://en.wikipedia.org/wiki/Simulated_annealing) could work ok. Our friend also sketched what an evolutionary solution would look like. 
-
-[This solution](https://github.com/J-DM/Roth-Peranson) could be adapted, few differences. This was actually an issue among med schools and someone got a nobel for solving it.  
-
-_The following were notes, stream of consciousness
-# one way to approach optimization is derivatives, but what's *derivative of utility with respect to assignment*, holding preferences constant? 
-
-An assignment `Dict[project, List[person]]`, and with the constraint that **every person is in exactly one project** it is in fact _invertible_. But every invertible map from A to collections of B is also a non-injective map from B to A, so we could in fact rewrite `assignment` as `Dict[person, project]`. 
-
-what is a derivative? it is when the observer _wiggles_ input to see what it does to output. our input type is a set of non-injective maps. 
-
-
-## How do we wiggle a set of non-injective maps? 
-i'm _guessing_ something to do with [finite differences](https://en.wikipedia.org/wiki/Finite_difference#difference_operator). 
-
-We know we can _rearrange_ the mapping. Maybe a mapping containing both `alice->pizza, bob->tofu` is "one step away" from a mapping that's exactly the same except `alice->tofu, bob->pizza`. But will that help us with the _numeric_ side, the value/utility of a mapping?
-
 
