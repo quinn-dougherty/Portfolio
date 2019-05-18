@@ -5,12 +5,15 @@ The problem is **assignment*. In particular, match 150 people into 25 projects.
 ### Context: capstone projects at Lambda School
 
 So, suppose two Lambda School students are Alice and Bob, and suppose that two
-Lambda School projects are Pizza and Veggie Burgers. 
+Lambda School projects are Pizza and Veggie Burgers. But in the following code
+we have random toy data, where people are named `aa` and projects are named `A`,
+where a is any lower case letter and A is any upper case letter.  
 
 ### My solution
 
 I spent a lot of time approaching this from a lot of angles, and found a
-solution that, in hindsight, is very simple. 
+solution that, in hindsight, is very simple. With some caveats, it can be
+guaranteed to converge, and randomness only even impacts `<10%` of people.  
 
 ### Assumptions
 
@@ -25,10 +28,14 @@ anything more detailed than **rank ordering**, so Bob's rank ordering might look
 like `Veggie Burgers >> Pizza >> Third Project` where `>>` is [a kind of "greater
 than" symbol](https://en.wikipedia.org/wiki/Preference_%28economics%29#Notation).
 
+We will also, for this prototype, assume **every project has the same size
+team** and assume **every person is surveyed for the same amount of preference
+information**. 
+
 ## This post
 
-I wanted to talk about my process, document the rabbit holes I went down, and make
-a meta-comment about not being sniped by the *wrong* rabbit holes. 
+I wanted to talk about my process and document the rabbit holes I went down
+before presenting a pretty-good solution. 
 
 Please skip only to the parts you're interested in, or read all the way through!
 
@@ -320,7 +327,7 @@ This run converged. It looks like the probability of convergence is, holding
 `LEN_PREFS`. If the rank order lists were each length 3, two people would have
 been left high and dry (completely unassigned). 
 
-While the outcome is depenedent on randomness-- the order in which the list of
+While the outcome is dependent on randomness-- the order in which the list of
 people is consumed -- only 16 people are even effected by that, since only 16
 people didn't get into their first choice. 
 
@@ -328,6 +335,8 @@ I'm sure when it's implemented for the next round of capstone projects at Lambda
 next week it won't run _quite_ this smooth, because there are other
 considerations that need to be considered and implemented. But for a decidedly
 not **awesome** solution, this is pretty grand. 
+
+## What if the distribution of project popularity is out of wack? 
 
 One more thing we should test out is if one or two projects are unusually
 popular. 
@@ -369,6 +378,11 @@ The projects ('J', 2), ('O', 3), ('T', 3), ('B', 5) are rather unpopular
 The mean satisfaction of this match is 0.8906666666666666. 
 ```
 
+_Even in this case_ it performs quite well, because the length of the survey is
+long _relative** to the max team size.
+
+**Remember: The shorter the survey, the weaker the results!**. 
+
 In a measure of a project's _surplus popularity_, `self.popularity += 1` every time
 the `Project.add_person` method rejects someone, I found that 11 people who
 wanted project C most couldn't fit into it. That's a lot-- more than enough to
@@ -376,10 +390,14 @@ justify duplicating the project, (by the same token, we can measure if groups
 end up too small-- at around two people, and those would be candidates to be
 dropped). Every time the program runs, management can make decisions like those,
 adjust the initial conditions to implement them, and run it again. This process
-can be iterated until the convergence is as close as desired.  
+can be iterated until the convergence is as close as desired.
 
-This is all set to run on toy data by command line, on any machine with a
-basic scientific python build. 
+All things considered, mean satisfaction is still pretty good. 
+
+## Clone it! 
+
+This is all set to run with toy data by command line, on any machine with a
+basic scientific python build (for the poisson test). 
 
 ```
 usage: main.py [-h] [--popularity-threshold POPULARITY_THRESHOLD]

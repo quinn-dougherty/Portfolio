@@ -4,8 +4,8 @@ from random import choice
 from typing import Optional, List, Tuple
 from itertools import product
 from math import isclose
-from numpy import divide, clip
-from scipy.stats import poisson
+from numpy import divide, clip # type: ignore
+from scipy.stats import poisson # type: ignore
 
 # global vars
 NUM_PEOPLE: int = 150
@@ -90,7 +90,7 @@ def assign_to_nth(people: List[Person],
 ###
 #################################################################################
 
-def satisfaction_(assigned_to: Project, preferences: List[Project]) -> int:
+def satisfaction_(assigned_to: Optional[Project], preferences: List[Project]) -> int:
     ''' returns the satisfaction score of being assigned '''
     try:
         # gain reverse index + 1 satisfaction from assignment
