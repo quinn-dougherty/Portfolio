@@ -14,6 +14,7 @@ parser.add_argument('--poisson', type=bool, default=False,
 
 args = parser.parse_args()
 
+
 def solve(people: List[Person] = PEOPLE,
           iters: int = PREF_MAX,
           report: bool = True,
@@ -35,12 +36,12 @@ def solve(people: List[Person] = PEOPLE,
     popularity_report = ', '.join(str(x)
                                   for x
                                   in popular(PROJECTS,
-                                             threshold = args.popularity_threshold))
+                                             threshold=args.popularity_threshold))
 
     unpopularity_report = ', '.join(str(x)
                                     for x
                                     in unpopular(PROJECTS,
-                                                 threshold = args.unpopularity_threshold))
+                                                 threshold=args.unpopularity_threshold))
 
     print()
     print("In the following, the tuple (project, int) represents a project annotated by how many times someone was rejected from it. ")
@@ -56,6 +57,6 @@ def solve(people: List[Person] = PEOPLE,
     pass
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     from matcher import *
     solve(PEOPLE, poisson=args.poisson)
