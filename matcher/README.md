@@ -34,16 +34,15 @@ Please skip only to the parts you're interested in, or read all the way through!
 
 - [Basic Model](#Model): Assumes some basic Python, literacy in type
 signatures or `pep484`, and advanced usage of `None`.
-- [Interpretation: Utility Maximization](#Interpretation:-Utility-Maximization):
-- [Combinatorics?](#Combinatorics?): Very formal, assumes literacy in discrete mathematics.
+- [Interpretation: Utility Maximization](#utility):
+- [Combinatorics?](#combinatorics): Very formal, assumes literacy in discrete mathematics.
 Explains how to interpret this as an optimization problem. 
-- [Solution: Optimization and Search?](#Solution:-Optimization-and-Search?): Some sketches and discussion
+- [Solution: Brute Force?](#search): Some sketches and discussion
 of search methods. 
-- [Solution: The Roth-Peranson Resident Matching Algorithm?](#Solution: For
-Medical School?): A
+- [Solution: The Roth-Peranson Resident Matching Algorithm?](#medschool): A
 problem similar to this is assigning med students to med schools, and an
 excellent solution is known. Will it work for us? 
-- [My Solution, with caveats](#My-Solution, with caveats): 
+- [My Solution, with caveats](#finale): 
 
 # Model
 
@@ -132,7 +131,7 @@ def mean_satisfaction(people: List[Person]) -> float:
                        len(people))
 ```
 
-# Interpretation: Utility Maximization
+# Interpretation: Utility Maximization <a name="utility"></a>
 
 Now that we have a _number_ we can interpret the quest for the best assignment
 as the **maximization of a function**. We know that some assignments will have
@@ -161,7 +160,7 @@ everyone agrees the outcome is fair.
 
 Does an **awesome** solution exist? 
 
-# Combinatorics? 
+# Combinatorics? <a name="combinatorics"></a> 
 
 If an **awesome** solution exists, one of the first steps you can take toward
 finding it is understanding the function space. Sometimes, the _size_ of a
@@ -206,7 +205,7 @@ groups. Gradient descent on permutation groups seems like the kind of thing you
 read about on the [John Baez](https://twitter.com/johncarlosbaez) cluster of twitter, whatever it is it's probably got
 a big "don't try this at home" label on it. 
 
-# Raw Search Power? 
+# Raw Search Power? <a name="search"></a>
 
 No. 
 
@@ -224,7 +223,7 @@ though it would have been good practice for me to implement them.
 And a note, gradient descent doesn't fit our criteria for an **awesome** solver,
 even though it'd be quite good. 
 
-# For Medical School? <a name="#Solution: For Medical School?"></a> 
+# Medical School? <a name="medschool"></a> 
 
 We're stepping back to the real world. Math is fun but it's not _practical_.
 Sometimes you just need to *get it done*. 
@@ -248,9 +247,9 @@ use case.
 If you'd like, spend some time trying to predict what will happen if "projects"
 are each given the empty rank ordering.
 
->! Nothing. All people return unassigned. 
+> Nothing. All people return unassigned. 
 
 So, adapting the *exact* med school algorithm doesn't work. 
 
-# My Solution
+# My Solution <a name="finale"></a>
 
