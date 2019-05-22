@@ -47,7 +47,7 @@ class Load:
                 return float(x.replace(',', '')
                               .replace('$', '')
                               .replace(' ', ''))
-            except BaseException:
+            except ValueError as e:
                 return x
 
         try:
