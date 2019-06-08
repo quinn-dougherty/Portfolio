@@ -143,7 +143,10 @@ def unassigned_num(people: List[Person]) -> int:
 def popular(projects: List[Project],
             threshold: int = 2) -> List[Tuple[Project, int]]:
     ''' sort projects by the popularity incrementer '''
-    return sorted([(project, project.popular) for project in projects if project.popular > threshold],
+    return sorted([(project, project.popular) 
+                   for project 
+                   in projects 
+                   if project.popular > threshold],
                   reverse=True,
                   key=lambda project_tup: project_tup[1])
 

@@ -1,8 +1,10 @@
 # Data Loading Tool:
 
 This is being used behind the scenes on the project [My
-House](https://myhouse-lr5myrn9k.now.sh/) at Lambda School, a home valuation
-tool. 
+House](https://myhouse-app.now.sh/) at Lambda School, a home valuation
+tool. My team's contribution was the valuation itself, including the management
+of datasets. The valuation took the form of an API on elastic beanstalk, the
+code for which is [here](https://github.com/labs12-real-estate/labs12-real-estate-valuation_service).  
 
 Given a data dump in a number of csvs, iterate through them and apply cleaning
 operations before concatenating them and writing them as one new, large csv-- all from
@@ -10,7 +12,9 @@ your terminal.
 
 I wrote this tool so that even if the data dump updated twice a week through the
 life of the project, the exploratory data analysis (EDA) and inference process
-wouldn't have to be slowed down for my team to update on that data. 
+wouldn't have to be slowed down for my team to update on that data. The project
+also involved basic machine learning in the XGBoost library and the
+aforementioned API, which was written in Flask. 
 
 ```
 13:05:20:load:$> python main.py -h
