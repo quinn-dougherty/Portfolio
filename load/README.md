@@ -6,6 +6,8 @@ tool. My team's contribution was the valuation itself, including the management
 of datasets. The valuation took the form of an API on elastic beanstalk, the
 code for which is [here](https://github.com/labs12-real-estate/labs12-real-estate-valuation_service).  
 
+![MyHouse demonstration](/MyHouse.gif)
+
 Given a data dump in a number of csvs, iterate through them and apply cleaning
 operations before concatenating them and writing them as one new, large csv-- all from
 your terminal.
