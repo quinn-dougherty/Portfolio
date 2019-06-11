@@ -17,6 +17,8 @@ guaranteed to converge, and in the worst case randomness only impacts `<10%` of
 people.
 You can [read the code here on GitHub!](https://github.com/quinn-dougherty/Portfolio/blob/master/matcher/matcher.py)
 
+It's similar to the [stable marriage problem](https://en.wikipedia.org/wiki/Stable_marriage_problem), but differs in that the provision of rank-ordering is one-sided. 
+
 ### Assumptions
 
 Because we're interested in a group's satisfaction and effectiveness at a
