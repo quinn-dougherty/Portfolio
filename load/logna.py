@@ -13,10 +13,7 @@ class LogMissing:
     ''' log info about missingness: .
        1. report rates/percentages
        2. report list of correlates (collinearity tests w VIF?)
-       3. infer regime of missingness (MCAR, MAR, MNAR)
-       4. record recomendation of impute strategy (MICE, KNN, etc.)
-       4*. auto-matically impute in pipeline
-
+       3. report possible MAR-correlates (the Missing At Random missingness regime, meaning a feature's missingness is a function of other features. ) 
     '''
 
     def __init__(self, load: Load, correlation_strength: float = 0.8):
