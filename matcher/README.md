@@ -139,7 +139,7 @@ def mean_satisfaction(people: List[Person]) -> float:
 ## Clone it! 
 
 This is all set to run with toy data by command line, on any machine with a
-basic scientific python build (for the poisson test). 
+basic scientific python build (for the poisson test), preferably Python 3.6
 
 ```
 usage: main.py [-h] [--popularity-threshold POPULARITY_THRESHOLD]
