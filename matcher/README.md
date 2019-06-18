@@ -2,7 +2,7 @@ This is a proof-of-concept for a project that became
 [Wizards](https://github.com/quinn-dougherty/wizards), which is currently
 utilized at Lambda School. 
 
-### Context: Capstone Projects at Lambda School
+# Context: Capstone Projects at Lambda School
 
 Lambda School has a rigorous capstone project program called Labs. The matching
 problem is the following: Suppose two Lambda School students are Alice and Bob, and suppose that two
@@ -14,7 +14,7 @@ In the following code
 we have random toy data, where people are named `aa` and projects are named `A`,
 where a is any lower case letter and A is any upper case letter.  
 
-### My Solution
+# My Solution
 
 The repository you are reading was my proof of concept. TLDR, it's a version of
 [stable marriage](https://en.wikipedia.org/wiki/Stable_marriage_problem) or the
